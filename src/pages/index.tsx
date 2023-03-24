@@ -45,12 +45,20 @@ const CreatePostWizard = () => {
       height={56}
     />
     <input
+      className=" bg-transparent grow outline-none text-2xl"
+      disabled={mutating}
       placeholder="Type some emojis"
-      className=" bg-transparent grow outline-none"
       type="text"
       value={input}
       onChange={value => setInput(value.target.value || '')}
-      disabled={mutating}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          if (input !== "") {
+            mutate({ content: input })
+          }
+        }
+      }}
     />
     {input !== '' && !mutating && (
       <button onClick={() => mutate({ content: input })}>
@@ -60,7 +68,7 @@ const CreatePostWizard = () => {
 
     {mutating && (
       <div className="flex items-center justify-center">
-        <LoadingSpinner />
+        <LoadingSpinner size={24} />
       </div>
     )}
   </div>
