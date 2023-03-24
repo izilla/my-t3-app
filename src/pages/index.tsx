@@ -7,11 +7,23 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import Image from "next/image";
 import { LoadingPage } from "~/components/loading";
+import { useState } from "react";
 
 dayjs.extend(relativeTime)
 
 const CreatePostWizard = () => {
   const { user } = useUser()
+
+  const [input, setInput] = useState('')
+
+  const ctx = api.useContext()
+
+  const { mutate, isLoading: mutating } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInput("")
+      void ctx.posts.getAll.invalidate()
+    }
+  })
 
   if (!user) return null
 
@@ -23,7 +35,15 @@ const CreatePostWizard = () => {
       width={56}
       height={56}
     />
-    <input placeholder="Type some emojis" className=" bg-transparent grow outline-none"></input>
+    <input
+      placeholder="Type some emojis"
+      className=" bg-transparent grow outline-none"
+      type="text"
+      value={input}
+      onChange={value => setInput(value.target.value || '')}
+      disabled={mutating}
+    />
+    <button onClick={() => mutate({ content: input })}>Post</button>
   </div>
 }
 
@@ -74,7 +94,6 @@ const Home: NextPage = () => {
   const { isLoaded: userLoaded, isSignedIn } = useUser()
 
   api.posts.getAll.useQuery()
-
 
   // Return empty if BOTH user and posts don't load
   if (!userLoaded) return <div />
