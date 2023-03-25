@@ -1,15 +1,12 @@
 import z from 'zod'
-import clerkClient, { type User } from "@clerk/clerk-sdk-node";
+import clerkClient from "@clerk/clerk-sdk-node";
+import filterUserForClient from '~/server/helpers/filterUserForClient';
 import { TRPCError } from "@trpc/server";
 import {
   createTRPCRouter,
   privateProcedure,
   publicProcedure
 } from "~/server/api/trpc";
-
-const filterUserForClient = (user: User) => {
-  return { id: user.id, username: user.username || '', profileImageUrl: user.profileImageUrl }
-}
 
 import { Ratelimit } from "@upstash/ratelimit"; // for deno: see above
 import { Redis } from "@upstash/redis";
